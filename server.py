@@ -5,7 +5,7 @@ import threading
 # Connection Data
 host = '10.128.0.8'
 # host = '192.168.0.192'
-port = 55515
+port = 55555
 
 # Starting Server
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -28,7 +28,7 @@ def handle(client):
             # Broadcasting Messages
             message = client.recv(1024)
             broadcast(message)
-            print(message)
+            print(message.decode('ascii'))
         except:
             # Removing And Closing Clients
             index = clients.index(client)
