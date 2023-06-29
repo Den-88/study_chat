@@ -3,9 +3,9 @@ import socket
 import threading
 import subprocess
 
+
 # Connection Data
 host = '10.128.0.8'
-# host = '192.168.0.192'
 port = 55555
 
 # Starting Server
@@ -33,34 +33,24 @@ def ping_check(ip):
         return str(e.output)
     except subprocess.TimeoutExpired:
         return "Ping timeout"
-
+    
 # Handling Messages From Clients
 def handle(client):
     while True:
         try:
             # Broadcasting Messages
             message = client.recv(1024)
-            if message:
-                broadcast(message)
-                print("New message from " + message.decode('ascii'))
-        except ConnectionResetError:
-            # Connection Reset by Peer (client disconnected)
+            broadcast(message)
+            print("New message from " + message.decode('ascii'))
+        except:
+            # Removing And Closing Clients
+            index = clients.index(client)
+            clients.remove(client)
+            client.close()
+            nickname = nicknames[index]
+            broadcast('{} left!'.format(nickname).encode('ascii'))
+            nicknames.remove(nickname)
             break
-        except BrokenPipeError:
-            # Broken Pipe (client disconnected)
-            break
-        except Exception as e:
-            print("Error occurred in handle:", e)
-            break
-
-    # Removing And Closing Client
-    if client in clients:
-        index = clients.index(client)
-        clients.remove(client)
-        client.close()
-        nickname = nicknames[index]
-        broadcast('{} left!'.format(nickname).encode('ascii'))
-        nicknames.remove(nickname)
 
 # Receiving / Listening Function
 def receive():
