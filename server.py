@@ -53,6 +53,9 @@ def handle(client):
         except ConnectionResetError:
             # Connection Reset by Peer (client disconnected)
             break
+        except BrokenPipeError:
+            # Broken Pipe (client disconnected)
+            break
         except Exception as e:
             print("Error occurred in handle:", e)
             break
