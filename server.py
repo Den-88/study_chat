@@ -1,10 +1,12 @@
 #!/bin/python3
 import socket
 import threading
+import subprocess
+
 
 # Connection Data
-host = '10.128.0.8'
-# host = '192.168.0.192'
+# host = '10.128.0.8'
+host = '192.168.0.192'
 port = 55555
 
 # Starting Server
@@ -17,18 +19,36 @@ clients = []
 nicknames = []
 
 # Sending Messages To All Connected Clients
+
+
 def broadcast(message):
     for client in clients:
         client.send(message)
 
+# Ping Check
+
+
+def ping_check(ip):
+    command = ['ping', '-c', '4', ip]
+    try:
+        output = subprocess.check_output(
+            command, timeout=5, universal_newlines=True)
+        return output
+    except subprocess.CalledProcessError as e:
+        return str(e.output)
+    except subprocess.TimeoutExpired:
+        return "Ping timeout"
+
 # Handling Messages From Clients
+
+
 def handle(client):
     while True:
         try:
             # Broadcasting Messages
             message = client.recv(1024)
             broadcast(message)
-            print(message.decode('ascii'))
+            print("New message from " + message.decode('ascii'))
         except:
             # Removing And Closing Clients
             index = clients.index(client)
@@ -40,11 +60,17 @@ def handle(client):
             break
 
 # Receiving / Listening Function
+
+
 def receive():
     while True:
         # Accept Connection
         client, address = server.accept()
         print("Connected with {}".format(str(address)))
+
+        # Ping Check
+        ping_result = ping_check(address[0])
+        print("Ping result for {}: {}".format(address[0], ping_result))
 
         # Request And Store Nickname
         client.send('NICK'.encode('ascii'))
@@ -60,6 +86,7 @@ def receive():
         # Start Handling Thread For Client
         thread = threading.Thread(target=handle, args=(client,))
         thread.start()
+
 
 print("Server if listening...")
 receive()
