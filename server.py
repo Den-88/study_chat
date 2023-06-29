@@ -70,6 +70,10 @@ def handle(client):
 
 def receive():
     while True:
+        # Accept Connection
+        client, address = server.accept()
+        print("Connected with {}".format(str(address)))
+
         # Request And Store Nickname
         client.send('NICK'.encode('ascii'))
         nickname = client.recv(1024).decode('ascii')
@@ -78,10 +82,6 @@ def receive():
 
         # Print Nickname
         print("User {} connected".format(nickname))
-
-        # Accept Connection
-        client, address = server.accept()
-        print("Connected with {}".format(str(address)))
 
         # Ping Check
         ping_result = ping_check(address[0])
