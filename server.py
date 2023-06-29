@@ -1,7 +1,7 @@
 import socket
 import threading
 
-host = '158.160.62.130'
+host = '10.128.0.8'
 port = 55555
 
 # Lists For Clients and Their Nicknames
