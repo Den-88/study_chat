@@ -5,8 +5,8 @@ import subprocess
 
 
 # Connection Data
-# host = '10.128.0.8'
-host = '192.168.0.192'
+host = '10.128.0.8'
+# host = '192.168.0.192'
 port = 55555
 
 # Starting Server
@@ -47,17 +47,23 @@ def handle(client):
         try:
             # Broadcasting Messages
             message = client.recv(1024)
-            broadcast(message)
-            print("New message from " + message.decode('ascii'))
-        except:
-            # Removing And Closing Clients
-            index = clients.index(client)
-            clients.remove(client)
-            client.close()
-            nickname = nicknames[index]
-            broadcast('{} left!'.format(nickname).encode('ascii'))
-            nicknames.remove(nickname)
+            if message:
+                broadcast(message)
+                print("New message from " + message.decode('ascii'))
+        except ConnectionResetError:
+            # Connection Reset by Peer (client disconnected)
             break
+        except Exception as e:
+            print("Error occurred in handle:", e)
+            break
+
+    # Removing And Closing Client
+    index = clients.index(client)
+    clients.remove(client)
+    client.close()
+    nickname = nicknames[index]
+    broadcast('{} left!'.format(nickname).encode('ascii'))
+    nicknames.remove(nickname)
 
 # Receiving / Listening Function
 
