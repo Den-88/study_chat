@@ -3,7 +3,6 @@ import socket
 import threading
 import subprocess
 
-
 # Connection Data
 host = '10.128.0.8'
 # host = '192.168.0.192'
@@ -19,15 +18,11 @@ clients = []
 nicknames = []
 
 # Sending Messages To All Connected Clients
-
-
 def broadcast(message):
     for client in clients:
         client.send(message)
 
 # Ping Check
-
-
 def ping_check(ip):
     command = ['ping', '-c', '4', ip]
     try:
@@ -40,8 +35,6 @@ def ping_check(ip):
         return "Ping timeout"
 
 # Handling Messages From Clients
-
-
 def handle(client):
     while True:
         try:
@@ -69,8 +62,6 @@ def handle(client):
     nicknames.remove(nickname)
 
 # Receiving / Listening Function
-
-
 def receive():
     while True:
         # Accept Connection
@@ -97,7 +88,6 @@ def receive():
         # Start Handling Thread For Client
         thread = threading.Thread(target=handle, args=(client,))
         thread.start()
-
 
 print("Server if listening...")
 receive()
